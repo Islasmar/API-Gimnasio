@@ -1,5 +1,3 @@
-
-import models.miembros
 import models.transacciones
 import schemas.transacciones
 from sqlalchemy.orm import Session

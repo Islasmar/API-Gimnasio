@@ -23,7 +23,7 @@ def get_users(db:Session, skip: int=0, limit:int=10):
 
 # Crear nuevo usuario
 def create_user(db:Session, user: schemas.users.UserCreate):
-    db_user = models.users.User(Persona_Id=user.Persona_Id,
+    db_user = models.users.User(
                                 Nombre_Usuario=user.Nombre_Usuario, 
                                 Correo_Electronico=user.Correo_Electronico,
                                 Contrasena=user.Contrasena, 

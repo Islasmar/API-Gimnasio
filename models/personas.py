@@ -1,15 +1,15 @@
-from sqlalchemy import Column,Boolean, Integer, String, DateTime, ForeignKey, Enum
+from sqlalchemy import Column,Boolean, Integer, String, DateTime, ForeignKey, Enum,Date
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.orm import relationship
 from config.db import Base
 import enum
 
-class MyGenero(enum.Enum):
-    Masculino = "Masculino"
-    Femenino = "Femenino"
-    Otro = "Otro"
+class MyGenero(str,enum.Enum):
+    Masculino = "H"
+    Femenino = "M"
+    Otro = "N/B"
 
-class MySangre(enum.Enum):
+class MySangre(str,enum.Enum):
     AP = "A+"
     AN = "A-"
     BP = "B+"
@@ -21,12 +21,12 @@ class MySangre(enum.Enum):
 
 class Persona(Base):
     __tablename__ = 'tbb_personas'
-    ID = Column(Integer, primary_key=True, index=True)
+    ID = Column(Integer, primary_key=True, autoincrement=True)
     Titulo_Cortesia = Column(String(20))
     Nombre = Column(String(80))
     Primer_Apellido = Column(String(80))
     Segundo_Apellido = Column(String(80))
-    Fecha_Nacimiento = Column(DateTime)
+    Fecha_Nacimiento = Column(Date)
     Fotografia = Column(String(100))
     Genero = Column(Enum(MyGenero))
     Tipo_Sangre = Column(Enum(MySangre))

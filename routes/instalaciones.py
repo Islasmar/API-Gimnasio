@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from cryptography.fernet import Fernet
 import json
-import crud.instalacion, config.db, schemas.instalaciones, models.instalaciones
+import crud.instalaciones, config.db, schemas.instalaciones, models.instalaciones
 from typing import List
 from jwt_config import solicita_token 
 from portadortoken import Portador

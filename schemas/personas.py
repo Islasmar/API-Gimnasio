@@ -7,7 +7,7 @@ class PersonaBase(BaseModel):
     Nombre:str
     Primer_Apellido:str
     Segundo_Apellido:str
-    Fecha_Nacimiento:datetime
+    Fecha_Nacimiento:date
     Fotografia:str
     Genero:str
     Tipo_Sangre:str
