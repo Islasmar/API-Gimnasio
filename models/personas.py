@@ -2,22 +2,6 @@ from sqlalchemy import Column,Boolean, Integer, String, DateTime, ForeignKey, En
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.orm import relationship
 from config.db import Base
-import enum
-
-class MyGenero(str,enum.Enum):
-    Masculino = "H"
-    Femenino = "M"
-    Otro = "N/B"
-
-class MySangre(str,enum.Enum):
-    AP = "A+"
-    AN = "A-"
-    BP = "B+"
-    BN = "B-"
-    ABP = "AB+"
-    ABN = "AB-"
-    OP = "O+"
-    ON = "O-"
 
 class Persona(Base):
     __tablename__ = 'tbb_personas'
@@ -28,10 +12,12 @@ class Persona(Base):
     Segundo_Apellido = Column(String(80))
     Fecha_Nacimiento = Column(Date)
     Fotografia = Column(String(100))
-    Genero = Column(Enum(MyGenero))
-    Tipo_Sangre = Column(Enum(MySangre))
+    Genero = Column(String(3))
+    Tipo_Sangre = Column(String(3))
     Estatus = Column(Boolean, default=False)
     Fecha_Registro = Column(DateTime)
     Fecha_Actualizacion = Column(DateTime)
+
+    usuarios = relationship("User", back_populates="persona", uselist=False)  # Relación con Usuario
     # Id_persona = Column(Integer)
     # intems = relationship("Item", back_populates="owner") Clave foranea

@@ -42,11 +42,11 @@ def read_user(id: int, db: Session = Depends(get_db)):
 
 # Ruta para crear un usurio
 @user.post('/users/', response_model=schemas.users.UserCreate,tags=['Usuarios'])
-def create_user(user: schemas.users.UserCreate, db: Session=Depends(get_db)):
+def create_user(user_data: schemas.users.UserCreate, persona_data: schemas.personas.PersonaCreate, db: Session = Depends(get_db)):
     db_users = crud.users.get_user_by_usuario(db,usuario=user.Nombre_Usuario)
     if db_users:
         raise HTTPException(status_code=400, detail="Usuario existente intenta nuevamente")
-    return crud.users.create_user(db=db, user=user)
+    return crud.users.create_user(db=db, user_data=user_data, persona_data=persona_data)
 
 # Ruta para actualizar un usuario
 @user.put('/users/{id}', response_model=schemas.users.User,tags=['Usuarios'], dependencies=[Depends(Portador())])
@@ -60,6 +60,7 @@ def update_user(id:int,user: schemas.users.UserUpdate, db: Session=Depends(get_d
 @user.delete('/users/{id}', response_model=schemas.users.User,tags=['Usuarios'], dependencies=[Depends(Portador())])
 def delete_user(id:int, db: Session=Depends(get_db)):
     db_users = crud.users.delete_user(db=db, id=id)
+    print(f"Resultado de eliminación: {db_users}") 
     if db_users is None:
         raise HTTPException(status_code=404, detail="Usuario no existe, no se pudo eliminar ")
     return db_users

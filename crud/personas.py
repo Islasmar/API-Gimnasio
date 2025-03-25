@@ -18,27 +18,29 @@ def get_personas(db:Session, skip: int=0, limit:int=10):
     return db.query(models.personas.Persona).offset(skip).limit(limit).all()
 
 # Crear una nueva personas
-def create_persona(db:Session, persona: schemas.personas.PersonaCreate):
-    db_persona = models.personas.Persona(Titulo_Cortesia=persona.Titulo_Cortesia,
-                                      Nombre=persona.Nombre, 
-                                      Primer_Apellido=persona.Primer_Apellido, 
-                                      Segundo_Apellido=persona.Segundo_Apellido, 
-                                      Fecha_Nacimiento=persona.Fecha_Nacimiento, 
-                                      Fotografia=persona.Fotografia, 
-                                      Genero=persona.Genero,
-                                      Tipo_Sangre=persona.Tipo_Sangre, 
-                                      Estatus=persona.Estatus,
-                                      Fecha_Registro=persona.Fecha_Registro,
-                                      Fecha_Actualizacion=persona.Fecha_Actualizacion)
+def create_persona(db: Session, persona: schemas.personas.PersonaCreate):
     try:
+        db_persona = models.personas.Persona(
+            Titulo_Cortesia=persona.Titulo_Cortesia,
+            Nombre=persona.Nombre,
+            Primer_Apellido=persona.Primer_Apellido,
+            Segundo_Apellido=persona.Segundo_Apellido,
+            Fecha_Nacimiento=persona.Fecha_Nacimiento,
+            Fotografia=persona.Fotografia,
+            Genero=persona.Genero,
+            Tipo_Sangre=persona.Tipo_Sangre,
+            Estatus=persona.Estatus,
+            Fecha_Registro=persona.Fecha_Registro,
+            Fecha_Actualizacion=persona.Fecha_Actualizacion
+        )
         db.add(db_persona)
         db.commit()
         db.refresh(db_persona)
         return db_persona
     except Exception as e:
         db.rollback()
-        print(f"Error al insertar persona: {str(e)}")  # 👈 Verifica la consola
         raise HTTPException(status_code=500, detail=f"Error al insertar persona: {str(e)}")
+
 
 
 # Actualizar una personas por id

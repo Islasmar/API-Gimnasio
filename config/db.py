@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 #configuracion de la base de datosm en aiven
 #SQLALCHEMY_DATABASE_URL = "mysql+pymysql://avnadmin:AVNS_TUUjXCnZQAQk-kZ2VKZ@mysql-270c42e9-lorenaascencion2003-2691.d.aivencloud.com:10171/defaultdb"
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:Islasmar0412@localhost:3309/gymdb"
+SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:Islasmar0412@localhost:3309/gimnasio_8b_idgs_220192"
 #  Conexión local
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

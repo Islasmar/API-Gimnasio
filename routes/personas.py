@@ -32,13 +32,16 @@ def read_persona(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Persona not found")
     return db_persona
 
-# Ruta para crear un usurio
-@persona.post('/personas/', response_model=schemas.personas.Persona,tags=['Personas'])
-def create_persona(persona: schemas.personas.PersonaCreate, db: Session=Depends(get_db)):
-    db_personas = crud.personas.get_persona_by_nombre(db,nombre=persona.Nombre)
+# Ruta para crear una persona
+@persona.post('/personas/', response_model=schemas.personas.PersonaCreate, tags=['Personas'])
+def create_persona(persona: schemas.personas.PersonaCreate, db: Session = Depends(get_db)):
+    print(f"📌 Datos recibidos: {persona}")  # 👈 Verifica qué valores llegan
+    db_personas = crud.personas.get_persona_by_nombre(db, nombre=persona.Nombre)
     if db_personas:
         raise HTTPException(status_code=400, detail="Persona existente intenta nuevamente")
+
     return crud.personas.create_persona(db=db, persona=persona)
+
 
 # Ruta para actualizar un Persona
 @persona.put('/personas/{id}', response_model=schemas.personas.Persona,tags=['Personas'], dependencies=[Depends(Portador())])

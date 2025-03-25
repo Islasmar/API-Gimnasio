@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.ext.declarative import declarative_base
+Base = declarative_base()
+
 
 # TABLAS SIN RELACIÓN 
 from routes.personas import persona
