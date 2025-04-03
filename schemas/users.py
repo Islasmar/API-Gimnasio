@@ -3,7 +3,6 @@ from pydantic  import BaseModel
 from datetime import datetime
 
 class UserBase(BaseModel):
-    ID_Persona: Optional[int] = None  # ID de la persona, generado en la creación
     Nombre_Usuario:str
     Contrasena:str
     Correo_Electronico:str
@@ -24,8 +23,5 @@ class User(UserBase):
         orm_mode = True
 
 class UserLogin(BaseModel):
-    Nombre_Usuario: Optional[str]=None
     Correo_Electronico: Optional[str]=None
     Contrasena:str
-    Numero_Telefonico_Movil: Optional[str]=None
-        

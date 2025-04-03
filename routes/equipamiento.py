@@ -40,12 +40,12 @@ def read_equipamiento(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return db_equipamiento
 
-# Ruta para crear un usurio
-@equipamiento.post('/equipamiento/', response_model=schemas.equipamiento.Equipamiento,tags=['Equipamiento'], dependencies=[Depends(Portador())])
+# Ruta para crear un equipamiento
+@equipamiento.post('/equipamiento/', response_model=schemas.equipamiento.EquipamientoCreate,tags=['Equipamiento'], dependencies=[Depends(Portador())])
 def create_equipamiento(equipamiento: schemas.equipamiento.EquipamientoCreate, db: Session=Depends(get_db)):
-    db_equipamiento = crud.equipamiento.get_equipamiento_by_equipamiento(db,equipamiento=equipamiento.Area)
+    db_equipamiento = crud.equipamiento.get_equipamiento_by_equipamiento(db,equipamiento=equipamiento.Nombre)
     if db_equipamiento:
-        raise HTTPException(status_code=400, detail="Usuario existente intenta nuevamente")
+        raise HTTPException(status_code=400, detail="Equipamiento existente intenta nuevamente")
     return crud.equipamiento.create_equipamiento(db=db, equipamiento=equipamiento)
 
 # Ruta para actualizar un usuario
@@ -53,7 +53,7 @@ def create_equipamiento(equipamiento: schemas.equipamiento.EquipamientoCreate, d
 def update_equipamiento(id:int,equipamiento: schemas.equipamiento.EquipamientoUpdate, db: Session=Depends(get_db)):
     db_equipamiento = crud.equipamiento.update_equipamiento(db=db, id=id, equipamiento=equipamiento)
     if db_equipamiento is None:
-        raise HTTPException(status_code=404, detail="Usuario no existe, no se pudo actualizar ")
+        raise HTTPException(status_code=404, detail="Equipamiento no existe, no se pudo actualizar ")
     return db_equipamiento
 
 # Ruta para eliminar un usuario

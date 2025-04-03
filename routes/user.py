@@ -41,12 +41,16 @@ def read_user(id: int, db: Session = Depends(get_db)):
     return db_user
 
 # Ruta para crear un usurio
-@user.post('/users/', response_model=schemas.users.UserCreate,tags=['Usuarios'])
-def create_user(user_data: schemas.users.UserCreate, persona_data: schemas.personas.PersonaCreate, db: Session = Depends(get_db)):
-    db_users = crud.users.get_user_by_usuario(db,usuario=user.Nombre_Usuario)
+@user.post('/users/', response_model=schemas.users.UserCreate, tags=['Usuarios'])
+def create_user(user: schemas.users.UserCreate, db: Session = Depends(get_db)):
+    db_users = crud.users.get_user_by_usuario(db, usuario=user.Nombre_Usuario)
     if db_users:
-        raise HTTPException(status_code=400, detail="Usuario existente intenta nuevamente")
-    return crud.users.create_user(db=db, user_data=user_data, persona_data=persona_data)
+        raise HTTPException(status_code=400, detail="Usuario existente, intenta nuevamente")
+    new_user = crud.users.create_user(db=db, user=user)
+    if new_user is None:
+        raise HTTPException(status_code=500, detail="Error al crear el usuario en la base de datos")
+
+    return new_user
 
 # Ruta para actualizar un usuario
 @user.put('/users/{id}', response_model=schemas.users.User,tags=['Usuarios'], dependencies=[Depends(Portador())])
@@ -67,9 +71,8 @@ def delete_user(id:int, db: Session=Depends(get_db)):
 
 @user.post('/login/', response_model=schemas.users.UserLogin, tags=['User Login'])
 def read_credentials(usuario:schemas.users.UserLogin, db: Session = Depends(get_db)):
-    db_credentials = crud.users.get_user_by_creentials(db, username=usuario.Nombre_Usuario,
+    db_credentials = crud.users.get_user_by_credentials(db,
                                                        correo=usuario.Correo_Electronico,
-                                                       telefono=usuario.Numero_Telefonico_Movil,
                                                        password=usuario.Contrasena)
     if db_credentials is None:
         return JSONResponse(content={'mensaje':'Acceso denegado'},status_code=404)

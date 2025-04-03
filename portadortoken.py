@@ -14,13 +14,16 @@ def get_db():
         db.close()
         
 class Portador(HTTPBearer):
-    async def __call__(self,request:Request, db: Session = Depends(get_db)):
+    async def __call__(self, request: Request, db: Session = Depends(get_db)):
         autorizacion = await super().__call__(request)
-        dato=valida_token(autorizacion.credentials)
-        db_userlogin= crud.users.get_user_by_creentials(db, username=dato['Nombre_Usuario'],
-                                                        correo=dato['Correo_Electronico'],
-                                                        telefono=dato['Numero_Telefonico_Movil'],
-                                                        password=dato['Contrasena'])
+        print(f"Token recibido: {autorizacion.credentials}")  # <-- Agregar para depuración
+        dato = valida_token(autorizacion.credentials)
+        print(f"Datos del token: {dato}")  # <-- Agregar para ver qué retorna `valida_token`
+
+        db_userlogin = crud.users.get_user_by_credentials(
+            db, correo=dato['Correo_Electronico'], password=dato['Contrasena']
+        )
         if db_userlogin is None:
-            raise HTTPException(status_code=404, detail='LogIn incorrecto')
+            raise HTTPException(status_code=404, detail='Login incorrecto')
+
         return db_userlogin

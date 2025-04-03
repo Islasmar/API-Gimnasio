@@ -3,7 +3,6 @@ from pydantic  import BaseModel
 from datetime import datetime
 
 class EquipamientoBase(BaseModel):
-    Area : str
     Nombre : str 
     Marca : str 
     Modelo : str
@@ -22,7 +21,6 @@ class EquipamientoUpdate(EquipamientoBase):
 
 class Equipamiento(EquipamientoBase):
     Id:int
-    #Responsablee_Id:int
     
     class Config:
         orm_mode = True

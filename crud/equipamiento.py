@@ -9,7 +9,7 @@ def get_equipamiento(db:Session, id: int):
 
 # Busqueda por USUARIO
 def get_equipamiento_by_equipamiento(db:Session, equipamiento : str):
-    return db.query(models.equipamiento.Equipamiento).filter(models.equipamiento.Equipamiento.Area == equipamiento).first()
+    return db.query(models.equipamiento.Equipamiento).filter(models.equipamiento.Equipamiento.Nombre == equipamiento).first()
 
 # Buscar todos los usuarios
 def get_equipamientos(db:Session, skip: int=0, limit:int=10):
@@ -18,7 +18,6 @@ def get_equipamientos(db:Session, skip: int=0, limit:int=10):
 # Crear nuevo usuario
 def create_equipamiento(db:Session, equipamiento: schemas.equipamiento.EquipamientoCreate):
     db_equipamiento = models.equipamiento.Equipamiento(
-                                            Area=equipamiento.Area,
                                              Nombre=equipamiento.Nombre,
                                              Marca=equipamiento.Marca,
                                              Modelo=equipamiento.Modelo,
