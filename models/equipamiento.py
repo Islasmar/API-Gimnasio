@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, Boolean, func
+from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, func
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.mysql import LONGTEXT
 from config.db import Base
 # import models.persons
@@ -16,4 +17,5 @@ class Equipamiento(Base):
     Total_Existencias = Column(Integer, default=0, nullable=True)
     Fecha_Registro = Column(DateTime, default=func.now(), nullable=False)  # CURRENT_TIMESTAMP
     Fecha_Actualizacion = Column(DateTime, nullable=True) 
-    
+
+    mantenimientos = relationship("Mantenimiento", back_populates="equipamiento")  # Relación inversa
