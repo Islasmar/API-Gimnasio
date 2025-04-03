@@ -119,3 +119,5 @@ dmypy.json
 # FastAPI specific
 *.db
 *.sqlite3
+
+venv/
