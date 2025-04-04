@@ -12,8 +12,8 @@ class ProductoBase(BaseModel):
     Precio_actual: Decimal  # Corregido a Decimal
     Fotografia: str
     Estatus: bool
-    Fecha_registro: datetime
-    Fecha_actualizacion: datetime
+    Fecha_Registro: datetime
+    Fecha_Actualizacion: datetime
 
 class ProductoCreate(ProductoBase):
     pass

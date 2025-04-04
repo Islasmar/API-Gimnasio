@@ -1,7 +1,8 @@
 
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
 from config.db import Base
+from datetime import datetime
 
 class Mantenimiento(Base):
     __tablename__ = "tbb_mantenimiento"
@@ -12,8 +13,8 @@ class Mantenimiento(Base):
     Responsable = Column(String(100), nullable=False)
     Costo = Column(Integer, nullable=False)
     Estatus = Column(Boolean, default=True)
-    Fecha_mantenimiento = Column(DateTime, nullable=False)
-    Fecha_Actualizacion = Column(DateTime, nullable=False)
+    Fecha_mantenimiento = Column(DateTime,default=func.now(), nullable=False)
+    Fecha_Actualizacion = Column(DateTime, nullable=False, onupdate=datetime.utcnow)
 
     equipamiento = relationship("Equipamiento", back_populates="mantenimientos")  # <-- Relación ORM
 

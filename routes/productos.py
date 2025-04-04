@@ -33,7 +33,7 @@ def read_producto(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="producto not found")
     return db_producto
 
-# Ruta para crear un usurio
+# Ruta para crear un producto
 @producto.post('/productos/', response_model=schemas.productos.Producto,tags=['productos'], dependencies=[Depends(Portador())])
 def create_producto(producto: schemas.productos.ProductoCreate, db: Session=Depends(get_db)):
     db_productos = crud.productos.get_producto_by_cod_barras(db,cod_barras=producto.Cod_barras)

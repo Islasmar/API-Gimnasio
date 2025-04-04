@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 class InstalacionBase(BaseModel):
-    Sucursal_Id: int  # Llave foránea a sucursales
+    #Sucursal_Id: int  # Llave foránea a sucursales
     Descripcion: str
     Tipo: str
     # Horario_Id: Optional[int]  # Comentado según solicitud
@@ -15,7 +15,7 @@ class InstalacionCreate(InstalacionBase):
     pass
 
 class InstalacionUpdate(BaseModel):
-    Sucursal_Id: Optional[int] = None
+    #Sucursal_Id: Optional[int] = None
     Descripcion: Optional[str] = None
     Tipo: Optional[str] = None
     # Horario_Id: Optional[int] = None  # Comentado según solicitud

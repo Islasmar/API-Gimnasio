@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Boolean
 from sqlalchemy.dialects.mysql import LONGTEXT
 from config.db import Base
+from datetime import datetime
 #import models.persons
 
 
@@ -18,8 +19,8 @@ class Sucursal(Base):
     Total_Empleados = Column (Integer, default=0)
     Horario_Disponibilidad = Column (LONGTEXT)
     Estatus = Column(Boolean, default=False)
-    Fecha_Registro = Column(DateTime)
-    Fecha_Actualizacion = Column(DateTime)
+    Fecha_Registro = Column(DateTime, default=datetime.utcnow, nullable=False)
+    Fecha_Actualizacion = Column(DateTime, onupdate=datetime.utcnow)
     
     
     
