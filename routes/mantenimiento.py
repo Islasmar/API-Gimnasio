@@ -37,7 +37,7 @@ def read_mantenimiento(skip: int=0, limit: int=10, db: Session=Depends(get_db)):
 # Ruta para obtener un mantenimiento por ID
 @mantenimiento.get("/mantenimiento/{id}", response_model=schemas.mantenimiento.Mantenimiento, tags=["Mantenimiento"], dependencies=[Depends(Portador())])
 def read_mantenimiento(id: int, db: Session = Depends(get_db)):
-    db_mantenimiento = crud.mantenimiento.get_mantenimiento_by_mantenimiento(db=db, id_equipamiento=id)
+    db_mantenimiento = crud.mantenimiento.get_mantenimiento_by_mantenimiento(db=db, id=id)
     if db_mantenimiento is None:
         raise HTTPException(status_code=404, detail="Mantenimiento no encontrado")
     return db_mantenimiento  # ⬅️ Convertir a esquema Pydantic

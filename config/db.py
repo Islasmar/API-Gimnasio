@@ -10,7 +10,7 @@ load_dotenv()
 
 SQLALCHEMY_DATABASE_URL = (
     f"mysql+pymysql://{os.getenv('DB_USER', 'root')}:{os.getenv('DB_PASSWORD', '')}"
-    f"@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '3306')}/{os.getenv('DB_NAME', 'gym')}"
+    f"@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '3309')}/{os.getenv('DB_NAME', 'gym')}"
 )
 # Crear el motor de base de datos
 engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)

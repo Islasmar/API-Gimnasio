@@ -6,17 +6,17 @@ from sqlalchemy.orm import joinedload
 
 
 # Busqueda por id
-#def get_mantenimiento_by_mantenimiento(db:Session, id_equipamiento: int):
-    #return db.query(models.mantenimiento.Mantenimiento).filter(models.mantenimiento.Mantenimiento.Id_equipamiento == id_equipamiento).first()
+def get_mantenimiento_by_mantenimiento(db: Session, id: int):
+    return db.query(models.mantenimiento.Mantenimiento).filter(models.mantenimiento.Mantenimiento.Id == id).first()
 
 
-def get_mantenimiento_by_mantenimiento(db: Session, id_equipamiento: int):
+""" def get_mantenimiento_by_mantenimiento(db: Session, id_equipamiento: int):
     return (
         db.query(models.mantenimiento.Mantenimiento)
         .options(joinedload(models.mantenimiento.Mantenimiento.equipamiento))  # 👈 Carga relación antes de cerrar la sesión
         .filter(models.mantenimiento.Mantenimiento.Id_equipamiento == id_equipamiento)
         .first()
-    )
+    ) """
 
 # Buscar todos los usuarios
 def get_mantenimientos(db:Session, skip: int=0, limit:int=10):
