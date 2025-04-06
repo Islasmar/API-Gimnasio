@@ -1,68 +1,99 @@
-
-from fastapi import APIRouter,HTTPException, Depends
-from sqlalchemy.orm import Session
-from cryptography.fernet import Fernet
-import crud.productos, config.db, schemas.productos, models.productos
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from portadortoken import Portador
-
-key = Fernet.generate_key()
-f = Fernet(key)
+import crud.productos, schemas.productos
+from config.db import mongo_db
+from models.productos import convertir_decimal_para_mongo  # Función auxiliar
+from pydantic import BaseModel
+from datetime import datetime
+from decimal import Decimal
 
 producto = APIRouter()
-models.productos.Base.metadata.create_all(bind=config.db.engine)
 
-def get_db():
-    db = config.db.SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# Obtener todos los productos
+@producto.get('/productos/', response_model=List[schemas.productos.Producto], tags=['productos'], dependencies=[Depends(Portador())])
+async def read_productos(skip: int = 0, limit: int = 1000):
+    db_productos = await crud.productos.get_productos(mongo_db, skip=skip, limit=limit)
+    
+    # Convertir ObjectId a str para cada producto
+    productos = []
+    for producto in db_productos:
+        if "_id" in producto:
+            producto["_id"] = str(producto["_id"])
+        productos.append(producto)
+    
+    return productos
 
-# Ruta para obtener todos los productos
-@producto.get('/productos/', response_model=List[schemas.productos.Producto],tags=['productos'], dependencies=[Depends(Portador())])
-def read_productos(skip: int=0, limit: int=1000, db: Session=Depends(get_db)):
-    db_productos = crud.productos.get_productos(db=db,skip=skip, limit=limit)
-    return db_productos
-
-# Ruta para obtener un producto por ID
+# Obtener un producto por ID
 @producto.get("/producto/{id}", response_model=schemas.productos.Producto, tags=["productos"], dependencies=[Depends(Portador())])
-def read_producto(id: int, db: Session = Depends(get_db)):
-    db_producto= crud.productos.get_producto(db=db, id=id)
+async def read_producto(id: str):
+    db_producto = await crud.productos.get_producto(mongo_db, id)
     if db_producto is None:
-        raise HTTPException(status_code=404, detail="producto not found")
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    
+    # Convertir ObjectId a str si está presente
+    if "_id" in db_producto:
+        db_producto["_id"] = str(db_producto["_id"])
+    
     return db_producto
 
-# Ruta para crear un producto
-@producto.post('/productos/', response_model=schemas.productos.Producto,tags=['productos'], dependencies=[Depends(Portador())])
-def create_producto(producto: schemas.productos.ProductoCreate, db: Session=Depends(get_db)):
-    db_productos = crud.productos.get_producto_by_cod_barras(db,cod_barras=producto.Cod_barras)
-    if db_productos:
-        raise HTTPException(status_code=400, detail="producto existente intenta nuevamente")
-    return crud.productos.create_producto(db=db, producto=producto)
+# Obtener un producto por código de barras
+@producto.get("/producto/cod_barras/{cod_barras}", response_model=schemas.productos.Producto, tags=["productos"], dependencies=[Depends(Portador())])
+async def read_producto_by_cod_barras(cod_barras: str):
+    db_producto = await crud.productos.get_producto_by_cod_barras(mongo_db, cod_barras)
+    if db_producto is None:
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    
+    # Convertir ObjectId a str si está presente
+    if "_id" in db_producto:
+        db_producto["_id"] = str(db_producto["_id"])
+    
+    return db_producto
 
-# Ruta para actualizar un producto
-@producto.put('/productos/{id}', response_model=schemas.productos.Producto,tags=['productos'], dependencies=[Depends(Portador())])
-def update_Producto(id:int,producto: schemas.productos.ProductoUpdate, db: Session=Depends(get_db)):
-    db_productos = crud.productos.update_producto(db=db, id=id, producto=producto)
-    if db_productos is None:
-        raise HTTPException(status_code=404, detail="producto no existe, no se pudo actualizar ")
-    return db_productos
+# Crear un producto
+@producto.post('/productos/', response_model=schemas.productos.Producto, tags=['productos'], dependencies=[Depends(Portador())])
+async def create_producto(producto: schemas.productos.ProductoCreate):
+    """Crear un nuevo producto."""
+    
+    # Asegúrate de que `producto` sea una instancia de `ProductoCreate`
+    if isinstance(producto, dict):  # Si `producto` es un diccionario
+        producto = schemas.productos.ProductoCreate(**producto)  # Convertir el diccionario a una instancia del modelo
 
-# Ruta para eliminar un producto
-@producto.delete('/productos/{id}', response_model=schemas.productos.Producto,tags=['productos'], dependencies=[Depends(Portador())])
-def delete_producto(id:int, db: Session=Depends(get_db)):
-    db_productos = crud.productos.delete_producto(db=db, id=id)
-    if db_productos is None:
-        raise HTTPException(status_code=404, detail="producto no existe, no se pudo eliminar ")
-    return db_productos
+    # Convertir a diccionario, excluyendo campos no necesarios
+    producto_data = producto.dict(exclude_unset=True, exclude={"fecha_registro", "fecha_actualizacion"})
 
+    # ✅ Convertir precio_actual de Decimal a float si existe
+    if "precio_actual" in producto_data and isinstance(producto_data["precio_actual"], Decimal):
+        producto_data["precio_actual"] = float(producto_data["precio_actual"])
 
+    # Agregar fechas
+    now = datetime.utcnow()
+    producto_data["fecha_registro"] = now
+    producto_data["fecha_actualizacion"] = now
 
+    # Insertar en MongoDB
+    result = await mongo_db["productosgym"].insert_one(producto_data)
 
+    producto_data["_id"] = str(result.inserted_id)  # Convertir ObjectId a str para la respuesta
+    return producto_data
 
+# Actualizar producto
+@producto.put('/productos/{id}', response_model=schemas.productos.Producto, tags=['productos'], dependencies=[Depends(Portador())])
+async def update_producto(id: str, producto: schemas.productos.ProductoUpdate):
+    # Convertir el modelo Pydantic a un diccionario
+    producto_data = producto.dict(exclude_unset=True)
 
+    # Convertir Decimal a float si existe
+    if "precio_actual" in producto_data and isinstance(producto_data["precio_actual"], Decimal):
+        producto_data["precio_actual"] = float(producto_data["precio_actual"])
 
+    # Actualizar el producto en la base de datos
+    db_producto = await crud.productos.update_producto(mongo_db, id=id, producto=producto_data)
+    if db_producto is None:
+        raise HTTPException(status_code=404, detail="Producto no existe, no se pudo actualizar")
+    return db_producto
 
-
-
+# Eliminar producto
+@producto.delete("/productos/{id}", response_model=schemas.productos.ProductoEliminado, tags=["productos"], dependencies=[Depends(Portador())])
+async def delete_producto_endpoint(id: str):
+    return await crud.productos.delete_producto(mongo_db, id)

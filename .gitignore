@@ -121,3 +121,5 @@ dmypy.json
 *.sqlite3
 
 venv/
+
+BackendGym/
