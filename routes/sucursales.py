@@ -33,7 +33,7 @@ def read_sucursales(skip: int=0, limit: int=10, db: Session=Depends(get_db)):
     return db_sucursales
 
 # Ruta para obtener un usuario por ID
-@sucursales.post("/sucursales/{id}", response_model=schemas.sucursales.Sucursal, tags=["Sucursal"], dependencies=[Depends(Portador())])
+@sucursales.get("/sucursales/{id}", response_model=schemas.sucursales.Sucursal, tags=["Sucursal"], dependencies=[Depends(Portador())])
 def read_sucursal(id: int, db: Session = Depends(get_db)):
     db_sucursales= crud.sucursales.get_sucursal(db=db, id=id)
     if db_sucursales is None:

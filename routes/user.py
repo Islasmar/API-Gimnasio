@@ -33,7 +33,7 @@ def read_users(skip: int=0, limit: int=10, db: Session=Depends(get_db)):
     return db_users
 
 # Ruta para obtener un usuario por ID
-@user.post("/user/{id}", response_model=schemas.users.User, tags=["Usuarios"], dependencies=[Depends(Portador())])
+@user.get("/user/{id}", response_model=schemas.users.User, tags=["Usuarios"], dependencies=[Depends(Portador())])
 def read_user(id: int, db: Session = Depends(get_db)):
     db_user= crud.users.get_user(db=db, id=id)
     if db_user is None:

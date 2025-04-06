@@ -33,7 +33,7 @@ def read_equipamiento(skip: int=0, limit: int=10, db: Session=Depends(get_db)):
     return db_equipamiento
 
 # Ruta para obtener un usuario por ID
-@equipamiento.post("/equipamiento/{id}", response_model=schemas.equipamiento.Equipamiento, tags=["Equipamiento"], dependencies=[Depends(Portador())])
+@equipamiento.get("/equipamiento/{id}", response_model=schemas.equipamiento.Equipamiento, tags=["Equipamiento"], dependencies=[Depends(Portador())])
 def read_equipamiento(id: int, db: Session = Depends(get_db)):
     db_equipamiento= crud.equipamiento.get_equipamiento(db=db, id=id)
     if db_equipamiento is None:

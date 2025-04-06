@@ -26,7 +26,7 @@ def read_productos(skip: int=0, limit: int=1000, db: Session=Depends(get_db)):
     return db_productos
 
 # Ruta para obtener un producto por ID
-@producto.post("/producto/{id}", response_model=schemas.productos.Producto, tags=["productos"], dependencies=[Depends(Portador())])
+@producto.get("/producto/{id}", response_model=schemas.productos.Producto, tags=["productos"], dependencies=[Depends(Portador())])
 def read_producto(id: int, db: Session = Depends(get_db)):
     db_producto= crud.productos.get_producto(db=db, id=id)
     if db_producto is None:

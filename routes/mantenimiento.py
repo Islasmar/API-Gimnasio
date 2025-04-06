@@ -35,7 +35,7 @@ def read_mantenimiento(skip: int=0, limit: int=10, db: Session=Depends(get_db)):
     return db_mantenimiento
 
 # Ruta para obtener un mantenimiento por ID
-@mantenimiento.post("/mantenimiento/{id}", response_model=schemas.mantenimiento.Mantenimiento, tags=["Mantenimiento"], dependencies=[Depends(Portador())])
+@mantenimiento.get("/mantenimiento/{id}", response_model=schemas.mantenimiento.Mantenimiento, tags=["Mantenimiento"], dependencies=[Depends(Portador())])
 def read_mantenimiento(id: int, db: Session = Depends(get_db)):
     db_mantenimiento = crud.mantenimiento.get_mantenimiento_by_mantenimiento(db=db, id_equipamiento=id)
     if db_mantenimiento is None:
