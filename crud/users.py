@@ -12,10 +12,8 @@ def get_user(db:Session, id: int):
 def get_user_by_usuario(db:Session, usuario: str):
     return db.query(models.users.User).filter(models.users.User.Nombre_Usuario == usuario).first()
 
-def get_user_by_credentials(db:Session, correo:str, password:str):
-    return db.query(models.users.User).filter(
-                                               (models.users.User.Correo_Electronico == correo),
-                                                 models.users.User.Contrasena == password).first()
+def get_user_by_credentials(db: Session, correo: str):
+    return db.query(models.users.User).filter(models.users.User.Correo_Electronico == correo).first()
 
 # Buscar todos los usuarios
 def get_users(db:Session, skip: int=0, limit:int=10):

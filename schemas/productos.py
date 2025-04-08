@@ -18,6 +18,7 @@ class PyObjectId(ObjectId):
 class ProductoBase(BaseModel):
     nombre: Optional[str] = None
     marca: Optional[str] = None
+    cantidad: Optional[int] = None
     cod_barras: Optional[str] = None
     descripcion: Optional[str] = None
     presentacion: Optional[str] = None

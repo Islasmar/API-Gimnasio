@@ -1,3 +1,4 @@
+import bcrypt
 from fastapi import APIRouter,HTTPException, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
@@ -40,12 +41,19 @@ def read_user(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
-# Ruta para crear un usurio
+# Ruta para crear un usuario
 @user.post('/users/', response_model=schemas.users.UserCreate, tags=['Usuarios'])
 def create_user(user: schemas.users.UserCreate, db: Session = Depends(get_db)):
+    # Verificar si el usuario ya existe
     db_users = crud.users.get_user_by_usuario(db, usuario=user.Nombre_Usuario)
     if db_users:
         raise HTTPException(status_code=400, detail="Usuario existente, intenta nuevamente")
+    
+    # Hashear la contraseña
+    hashed_password = bcrypt.hashpw(user.Contrasena.encode('utf-8'), bcrypt.gensalt())
+    user.Contrasena = hashed_password.decode('utf-8')  # Guardar la contraseña hasheada
+
+    # Crear el usuario
     new_user = crud.users.create_user(db=db, user=user)
     if new_user is None:
         raise HTTPException(status_code=500, detail="Error al crear el usuario en la base de datos")
@@ -70,11 +78,16 @@ def delete_user(id:int, db: Session=Depends(get_db)):
     return db_users
 
 @user.post('/login/', response_model=schemas.users.UserLogin, tags=['User Login'])
-def read_credentials(usuario:schemas.users.UserLogin, db: Session = Depends(get_db)):
-    db_credentials = crud.users.get_user_by_credentials(db,
-                                                       correo=usuario.Correo_Electronico,
-                                                       password=usuario.Contrasena)
+def read_credentials(usuario: schemas.users.UserLogin, db: Session = Depends(get_db)):
+    # Buscar al usuario por correo electrónico
+    db_credentials = crud.users.get_user_by_credentials(db, correo=usuario.Correo_Electronico)
     if db_credentials is None:
-        return JSONResponse(content={'mensaje':'Acceso denegado'},status_code=404)
-    token:str=solicita_token(usuario.dict())
+        return JSONResponse(content={'mensaje': 'Usuario no encontrado'}, status_code=404)
+    
+    # Verificar la contraseña
+    if not bcrypt.checkpw(usuario.Contrasena.encode('utf-8'), db_credentials.Contrasena.encode('utf-8')):
+        return JSONResponse(content={'mensaje': 'Contraseña incorrecta'}, status_code=404)
+    
+    # Generar el token
+    token: str = solicita_token(usuario.dict())
     return JSONResponse(status_code=200, content=token)

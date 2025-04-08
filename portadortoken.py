@@ -3,6 +3,7 @@ from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 from jwt_config import valida_token
 import crud.users, config.db, models.users
+import bcrypt  # Asegúrate de importar bcrypt
 
 models.users.Base.metadata.create_all(bind=config.db.engine)
 
@@ -20,10 +21,13 @@ class Portador(HTTPBearer):
         dato = valida_token(autorizacion.credentials)
         print(f"Datos del token: {dato}")  # <-- Agregar para ver qué retorna `valida_token`
 
-        db_userlogin = crud.users.get_user_by_credentials(
-            db, correo=dato['Correo_Electronico'], password=dato['Contrasena']
-        )
+        # Buscar al usuario solo por correo electrónico
+        db_userlogin = crud.users.get_user_by_credentials(db, correo=dato['Correo_Electronico'])
         if db_userlogin is None:
-            raise HTTPException(status_code=404, detail='Login incorrecto')
+            raise HTTPException(status_code=404, detail='Usuario no encontrado')
+
+        # Verificar la contraseña
+        if not bcrypt.checkpw(dato['Contrasena'].encode('utf-8'), db_userlogin.Contrasena.encode('utf-8')):
+            raise HTTPException(status_code=401, detail='Contraseña incorrecta')
 
         return db_userlogin
